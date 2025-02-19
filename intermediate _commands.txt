@@ -1,0 +1,14 @@
+# Concatenates all .weir.fst files into a single results file (overwrites if already exists)
+cat *.weir.fst > all_chromosomes_fst_results.txt  
+
+# Displays the first 10 lines of the concatenated results file to check its contents
+head all_chromosomes_fst_results.txt  
+
+# List the sizes of all .weir.fst files in a human-readable format
+ls -lh *.weir.fst  
+
+# Displays the first 10 lines of a specific chromosome's FST results to inspect individual data
+head ALL.chr1.phase1_release_v3.20101123.snps_indels_svs.genotypes_african_maf_filtered_fst.weir.fst  
+
+
+the above commands are run after doing fst as a quality check and integrity check and to concatinate the files together 
