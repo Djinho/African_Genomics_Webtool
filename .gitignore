@@ -1,0 +1,40 @@
+# Large data files
+*.vcf.gz
+*.vcf.gz.tbi
+*.vcf
+*.bed
+*.bim
+*.fam
+
+# Results data (too large for GitHub)
+results/
+
+# Sample lists (can be regenerated)
+*_samples.txt
+african_samples.txt
+sample_panel.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+notes.txt

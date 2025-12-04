@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}FST Analysis - African Genomics Explorer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">FST Analysis</h1>
+        <p class="page-description">Fixation index (FST) measures genetic differentiation between populations. Higher values indicate greater genetic divergence.</p>
+    </div>
+</div>
+
+<section class="analysis-section">
+    <div class="container">
+        <div class="analysis-grid">
+            <div class="analysis-card main-plot">
+                <div class="card-header">
+                    <h2>FST Heatmap</h2>
+                    <p>Pairwise population differentiation matrix</p>
+                </div>
+                <div class="plot-container" id="fst-heatmap"></div>
+            </div>
+
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h2>Pairwise FST Values</h2>
+                    <p>Detailed comparison table</p>
+                </div>
+                <div class="fst-table-container">
+                    <table class="fst-table">
+                        <thead>
+                            <tr>
+                                <th>Population 1</th>
+                                <th>Population 2</th>
+                                <th>Mean FST</th>
+                                <th>Interpretation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in fst_details | sort(attribute='mean_fst', reverse=true) %}
+                            <tr>
+                                <td>
+                                    <span class="pop-badge" style="background: {{ populations[item.pop1].color }}">{{ item.pop1 }}</span>
+                                    {{ populations[item.pop1].name }}
+                                </td>
+                                <td>
+                                    <span class="pop-badge" style="background: {{ populations[item.pop2].color }}">{{ item.pop2 }}</span>
+                                    {{ populations[item.pop2].name }}
+                                </td>
+                                <td class="fst-value">{{ "%.4f" | format(item.mean_fst) }}</td>
+                                <td>
+                                    {% if item.mean_fst < 0.005 %}
+                                    <span class="fst-level low">Very Low</span>
+                                    {% elif item.mean_fst < 0.01 %}
+                                    <span class="fst-level moderate">Low</span>
+                                    {% elif item.mean_fst < 0.015 %}
+                                    <span class="fst-level high">Moderate</span>
+                                    {% else %}
+                                    <span class="fst-level very-high">High</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <h3>Understanding FST</h3>
+                <p>FST (Fixation Index) quantifies genetic differentiation between populations based on allele frequency differences.</p>
+                <ul>
+                    <li><strong>FST = 0:</strong> No differentiation (identical allele frequencies)</li>
+                    <li><strong>FST = 0-0.05:</strong> Little genetic differentiation</li>
+                    <li><strong>FST = 0.05-0.15:</strong> Moderate differentiation</li>
+                    <li><strong>FST = 0.15-0.25:</strong> Great differentiation</li>
+                    <li><strong>FST > 0.25:</strong> Very great differentiation</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Method Details</h3>
+                <ul>
+                    <li><strong>Estimator:</strong> Weir and Cockerham (1984)</li>
+                    <li><strong>Tool:</strong> VCFtools --weir-fst-pop</li>
+                    <li><strong>Variants:</strong> {{ "{:,}".format(stats.n_variants) }} SNPs</li>
+                    <li><strong>Region:</strong> {{ stats.chromosome }}</li>
+                </ul>
+                <p class="note">Note: African populations show relatively low FST values compared to inter-continental comparisons, reflecting shared recent ancestry.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const fstMatrix = {{ fst_matrix | safe }};
+    const fstPops = {{ fst_pops | safe }};
+    const populations = {{ populations | tojson | safe }};
+
+    createFSTHeatmap(fstMatrix, fstPops, 'fst-heatmap', populations);
+</script>
+{% endblock %}

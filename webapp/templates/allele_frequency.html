@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Allele Frequency - African Genomics Explorer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Allele Frequency Comparison</h1>
+        <p class="page-description">Compare how common genetic variants are across different African populations. Points on the diagonal indicate equal frequencies.</p>
+    </div>
+</div>
+
+<section class="analysis-section">
+    <div class="container">
+        <div class="controls-panel">
+            <div class="control-group">
+                <label for="pop1-select">Population 1:</label>
+                <select id="pop1-select" class="select-control">
+                    {% for code, pop in populations.items() %}
+                    <option value="{{ code }}_AF" {% if loop.first %}selected{% endif %}>
+                        {{ pop.name }} ({{ code }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="control-separator">vs</div>
+            <div class="control-group">
+                <label for="pop2-select">Population 2:</label>
+                <select id="pop2-select" class="select-control">
+                    {% for code, pop in populations.items() %}
+                    <option value="{{ code }}_AF" {% if loop.index == 2 %}selected{% endif %}>
+                        {{ pop.name }} ({{ code }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button id="update-plot" class="btn btn-primary">Update Plot</button>
+        </div>
+
+        <div class="analysis-card main-plot">
+            <div class="card-header">
+                <h2>Allele Frequency Scatter Plot</h2>
+                <p>Each point represents a variant. Showing first 10,000 variants for performance.</p>
+            </div>
+            <div class="plot-container large" id="af-scatter"></div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <h3>Reading the Plot</h3>
+                <ul>
+                    <li><strong>Diagonal line:</strong> Variants with equal frequency in both populations</li>
+                    <li><strong>Points near diagonal:</strong> Similar frequencies (shared variation)</li>
+                    <li><strong>Points far from diagonal:</strong> Population-specific frequency differences</li>
+                    <li><strong>Corners (0,1) or (1,0):</strong> Fixed differences between populations</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Allele Frequency Basics</h3>
+                <p>Allele frequency is the proportion of chromosomes carrying a particular variant allele in a population.</p>
+                <ul>
+                    <li><strong>AF = 0:</strong> Variant absent in population</li>
+                    <li><strong>AF = 0.5:</strong> Variant present in 50% of chromosomes</li>
+                    <li><strong>AF = 1:</strong> Variant fixed in population (all carry it)</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Dataset Information</h3>
+                <ul>
+                    <li><strong>Total Variants:</strong> {{ "{:,}".format(stats.n_variants) }}</li>
+                    <li><strong>Displayed:</strong> 10,000 (for performance)</li>
+                    <li><strong>Region:</strong> {{ stats.chromosome }}</li>
+                    <li><strong>Populations:</strong> {{ stats.n_populations }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const afData = {{ af_data | safe }};
+    const populations = {{ populations | tojson | safe }};
+
+    // Initial plot
+    let currentPop1 = 'YRI_AF';
+    let currentPop2 = 'LWK_AF';
+    createAFPlot(afData, currentPop1, currentPop2, 'af-scatter', populations);
+
+    // Update button handler
+    document.getElementById('update-plot').addEventListener('click', function() {
+        currentPop1 = document.getElementById('pop1-select').value;
+        currentPop2 = document.getElementById('pop2-select').value;
+        createAFPlot(afData, currentPop1, currentPop2, 'af-scatter', populations);
+    });
+
+    // Also update on select change for better UX
+    document.getElementById('pop1-select').addEventListener('change', function() {
+        currentPop1 = this.value;
+        createAFPlot(afData, currentPop1, currentPop2, 'af-scatter', populations);
+    });
+
+    document.getElementById('pop2-select').addEventListener('change', function() {
+        currentPop2 = this.value;
+        createAFPlot(afData, currentPop1, currentPop2, 'af-scatter', populations);
+    });
+</script>
+{% endblock %}

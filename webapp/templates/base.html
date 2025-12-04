@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}African Genomics Explorer{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{{ url_for('home') }}">
+                <span class="dna-icon">&#x1F9EC;</span>
+                <span class="brand-text">African Genomics Explorer</span>
+            </a>
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+            <li><a href="{{ url_for('pca') }}" class="{% if request.endpoint == 'pca' %}active{% endif %}">PCA Analysis</a></li>
+            <li><a href="{{ url_for('fst') }}" class="{% if request.endpoint == 'fst' %}active{% endif %}">FST Analysis</a></li>
+            <li><a href="{{ url_for('allele_frequency') }}" class="{% if request.endpoint == 'allele_frequency' %}active{% endif %}">Allele Frequency</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Data Source</h4>
+                <p>1000 Genomes Project Phase 3</p>
+                <p>Chromosome 22 | 5 African Populations</p>
+            </div>
+            <div class="footer-section">
+                <h4>Technologies</h4>
+                <p>Flask | Plotly.js | Python</p>
+                <p>PLINK | VCFtools</p>
+            </div>
+            <div class="footer-section">
+                <h4>Project</h4>
+                <p><a href="https://github.com/Djinho/African_Genomics_Webtool" target="_blank">GitHub Repository</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>African Genomics Explorer | Built for exploring genetic diversity</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/plots.js') }}"></script>
+    <script>
+        // Mobile nav toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

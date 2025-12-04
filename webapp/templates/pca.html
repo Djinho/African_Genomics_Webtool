@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}PCA Analysis - African Genomics Explorer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Principal Component Analysis</h1>
+        <p class="page-description">Dimensionality reduction reveals population structure in genomic data. Each point represents an individual, colored by their population of origin.</p>
+    </div>
+</div>
+
+<section class="analysis-section">
+    <div class="container">
+        <div class="population-legend">
+            {% for code, pop in populations.items() %}
+            <div class="legend-item">
+                <span class="legend-dot" style="background: {{ pop.color }}"></span>
+                <span class="legend-label">{{ pop.name }} ({{ code }})</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="analysis-grid">
+            <div class="analysis-card main-plot">
+                <div class="card-header">
+                    <h2>PC1 vs PC2</h2>
+                    <p>Primary axes of genetic variation</p>
+                </div>
+                <div class="plot-container" id="pca-plot-main"></div>
+            </div>
+
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h2>PC1 vs PC3</h2>
+                    <p>Alternative view of structure</p>
+                </div>
+                <div class="plot-container" id="pca-plot-alt"></div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <h3>Understanding PCA</h3>
+                <p>Principal Component Analysis (PCA) reduces high-dimensional genetic data to a few key axes that capture the most variation. Individuals who cluster together share more genetic similarity.</p>
+                <ul>
+                    <li><strong>PC1</strong> typically captures the largest source of variation</li>
+                    <li><strong>PC2</strong> captures the second-largest independent source</li>
+                    <li>Clusters often correspond to geographic or ancestral groups</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Dataset Details</h3>
+                <ul>
+                    <li><strong>Samples:</strong> {{ stats.n_samples }} individuals</li>
+                    <li><strong>Variants:</strong> {{ "{:,}".format(stats.n_variants) }} SNPs</li>
+                    <li><strong>Region:</strong> {{ stats.chromosome }}</li>
+                    <li><strong>Filter:</strong> MAF > 5%</li>
+                    <li><strong>Method:</strong> PLINK 1.9 --pca</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const pcaData = {{ pca_data | safe }};
+    const populations = {{ populations | tojson | safe }};
+
+    // Create main PCA plot (PC1 vs PC2)
+    createPCAPlot(pcaData, 'pca-plot-main', 'pc1', 'pc2', populations);
+
+    // Create alternative PCA plot (PC1 vs PC3)
+    createPCAPlot(pcaData, 'pca-plot-alt', 'pc1', 'pc3', populations);
+</script>
+{% endblock %}

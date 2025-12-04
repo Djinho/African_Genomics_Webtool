@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}African Genomics Explorer - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Exploring African Genetic Diversity</h1>
+        <p class="hero-subtitle">Interactive visualization and analysis of genomic variation across five African populations from the 1000 Genomes Project</p>
+        <div class="hero-cta">
+            <a href="{{ url_for('pca') }}" class="btn btn-primary">Explore PCA</a>
+            <a href="{{ url_for('fst') }}" class="btn btn-secondary">View FST Analysis</a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="dna-helix"></div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">&#x1F465;</div>
+                <div class="stat-value">{{ stats.n_samples }}</div>
+                <div class="stat-label">Individuals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">&#x1F30D;</div>
+                <div class="stat-value">{{ stats.n_populations }}</div>
+                <div class="stat-label">Populations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">&#x1F9EC;</div>
+                <div class="stat-value">{{ "{:,}".format(stats.n_variants) }}</div>
+                <div class="stat-label">Variants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">&#x1F4CD;</div>
+                <div class="stat-value">{{ stats.chromosome }}</div>
+                <div class="stat-label">Region</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="populations-section">
+    <div class="container">
+        <h2 class="section-title">Study Populations</h2>
+        <p class="section-subtitle">Five diverse African populations representing different regions and genetic ancestries</p>
+        <div class="populations-grid">
+            {% for code, pop in populations.items() %}
+            <div class="population-card" style="--pop-color: {{ pop.color }}">
+                <div class="pop-header">
+                    <span class="pop-dot" style="background: {{ pop.color }}"></span>
+                    <span class="pop-code">{{ code }}</span>
+                </div>
+                <h3 class="pop-name">{{ pop.name }}</h3>
+                <p class="pop-location">{{ pop.location }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Analysis Tools</h2>
+        <div class="features-grid">
+            <a href="{{ url_for('pca') }}" class="feature-card">
+                <div class="feature-icon">&#x1F4CA;</div>
+                <h3>Principal Component Analysis</h3>
+                <p>Visualize population structure through dimensionality reduction of genomic data. Identify genetic clusters and relationships between populations.</p>
+                <span class="feature-link">Explore PCA &rarr;</span>
+            </a>
+            <a href="{{ url_for('fst') }}" class="feature-card">
+                <div class="feature-icon">&#x1F5FA;</div>
+                <h3>FST Analysis</h3>
+                <p>Measure genetic differentiation between population pairs using Weir and Cockerham's FST statistic. Understand population divergence.</p>
+                <span class="feature-link">View FST &rarr;</span>
+            </a>
+            <a href="{{ url_for('allele_frequency') }}" class="feature-card">
+                <div class="feature-icon">&#x1F4C8;</div>
+                <h3>Allele Frequencies</h3>
+                <p>Compare allele frequency distributions across populations. Identify variants with population-specific patterns.</p>
+                <span class="feature-link">Compare Frequencies &rarr;</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <div class="about-content">
+            <h2 class="section-title">About This Project</h2>
+            <p>This web application provides interactive tools for exploring genetic variation in African populations. The data comes from the <strong>1000 Genomes Project Phase 3</strong>, focusing on chromosome 22 variants across five African populations.</p>
+            <h3>Methods</h3>
+            <ul class="methods-list">
+                <li><strong>PCA:</strong> Computed using PLINK 1.9 on filtered variants (MAF > 5%)</li>
+                <li><strong>FST:</strong> Calculated using VCFtools with Weir and Cockerham's estimator</li>
+                <li><strong>Allele Frequencies:</strong> Computed per population using VCFtools</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}
