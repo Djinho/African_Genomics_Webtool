@@ -6,8 +6,19 @@
 *.bim
 *.fam
 
-# Results data (too large for GitHub)
-results/
+# Results data - exclude large files but keep webapp data
+results/admixture/*.bed
+results/admixture/*.bim
+results/admixture/*.fam
+results/admixture/*.nosex
+results/admixture/*.log
+results/admixture/*.prune.*
+results/admixture/*.sh
+results/admixture/*.eigenval
+results/admixture/*.eigenvec
+results/admixture/log_*.txt
+results/admixture/sample_populations.txt
+results/*_allele_freq.txt
 
 # Sample lists (can be regenerated)
 *_samples.txt
